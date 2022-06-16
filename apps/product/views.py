@@ -17,12 +17,12 @@ from .paginations import ProductPagination
 
 
 class ListProductView(generics.ListAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(is_published=True)
     serializer_class = ProductSerializer
     permission_classes = (AllowAny,)
     pagination_class = ProductPagination
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['is_published', 'price', 'category']
+    filterset_fields = ['price', 'category']
     search_fields = ['title', 'price']
 
     # def get_serializer_context(self):

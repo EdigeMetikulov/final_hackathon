@@ -7,12 +7,12 @@ from rest_framework import status
 from .models import ShoppingCart, CartItem
 from .serializers import CartSerializer, CartItemSerializer
 
+
 # HEADERS Authorization Token 123dasgfd12molop
 # http://127.0.0.1:8000/api/v1/cart/<int:pk>/
 
 
 class ShoppingCartView(APIView):
-
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -20,6 +20,10 @@ class ShoppingCartView(APIView):
         cart = user.cart
         serializer = CartSerializer(cart)
         return Response(serializer.data)
+
+
+class ShoppingCartUpdateView(APIView):
+    permission_classes = (IsAuthenticated,)
 
     def put(self, request, pk=None):
         cart = request.user.cart
@@ -32,6 +36,10 @@ class ShoppingCartView(APIView):
         cart_item.save()
         serializer = CartItemSerializer(cart_item)
         return Response(serializer.data)
+
+
+class ShoppingCartDeleteView(APIView):
+    permission_classes = (IsAuthenticated,)
 
     def delete(self, request, pk):
         cart = request.user.cart
@@ -53,4 +61,3 @@ class AddProductInCartView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
-

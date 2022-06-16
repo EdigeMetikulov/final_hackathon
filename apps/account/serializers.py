@@ -31,24 +31,24 @@ class RegistrationSerializer(serializers.Serializer):
         user.send_activation_email()
 
 
-class LoginSerializer(TokenObtainPairSerializer):
-    email = serializers.EmailField(required=True)
-    password = serializers.CharField(min_length=6)
-
-    def validate_email(self, email):
-        if not User.objects.filter(
-                email=email).exists():  # проверили имейл на соответствие базе данных перед сохранением
-            raise serializers.ValidationError("email doesn't exists")
-        return email
-
-    def validate(self, attrs):
-        email = attrs.get('email')
-        password = attrs.pop('password')
-        user = User.objects.get(email=email)
-        if not user.check_password(password):
-            raise serializers.ValidationError('Invalid password')
-        if user and user.is_active:
-            refresh = self.get_token(user)
-            attrs['refresh'] = str(refresh)
-            attrs['access'] = str(refresh.access_token)
-        return attrs
+# class LoginSerializer(TokenObtainPairSerializer):
+#     email = serializers.EmailField(required=True)
+#     password = serializers.CharField(min_length=6)
+#
+#     def validate_email(self, email):
+#         if not User.objects.filter(
+#                 email=email).exists():  # проверили имейл на соответствие базе данных перед сохранением
+#             raise serializers.ValidationError("email doesn't exists")
+#         return email
+#
+#     def validate(self, attrs):
+#         email = attrs.get('email')
+#         password = attrs.pop('password')
+#         user = User.objects.get(email=email)
+#         if not user.check_password(password):
+#             raise serializers.ValidationError('Invalid password')
+#         if user and user.is_active:
+#             refresh = self.get_token(user)
+#             attrs['refresh'] = str(refresh)
+#             attrs['access'] = str(refresh.access_token)
+#         return attrs

@@ -14,7 +14,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['category'] = instance.category.title
+        representation['category'] = instance.category
         # representation['owner'] = instance.owner.email
         representation['likes'] = instance.likes.all().count()
         representation['reviews'] = instance.reviews.all().count()
@@ -28,7 +28,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['category'] = instance.category.title
+        representation['category'] = instance.category
         # representation['owner'] = instance.owner.email
         representation['likes'] = instance.likes.filter(is_like=True).count()
         representation['reviews'] = ReviewSerializer(instance.reviews.all(), many=True).data
@@ -85,7 +85,7 @@ class FavouriteSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['category'] = instance.category.title
+        representation['category'] = instance.category
         return representation
 
 
