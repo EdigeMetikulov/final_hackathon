@@ -1,7 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager, AbstractBaseUser
 from django.db import models
 from django.core.mail import send_mail
+from django.db.models.signals import post_save
 
+from apps.account.services.signals import post_create_cart_signal
 
 class UserManager(BaseUserManager):
     def _create(self, email, password, **extra_fields):
@@ -61,3 +63,6 @@ class User(AbstractBaseUser):
         activation_url = f'http://localhost:8000/account/activate/{self.activation_code}'
         message = f'You are signed up sucessfuly! Activate your account {activation_url}'
         send_mail("activate your account", message, 'test@gmail.com', [self.email, ])
+
+
+post_save.connect(post_create_cart_signal, User)
