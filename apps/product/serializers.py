@@ -10,7 +10,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'category', 'price', 'watch']
+        fields = ['id', 'title', 'category', 'price', 'watch', "image"]
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -18,6 +18,8 @@ class ProductSerializer(serializers.ModelSerializer):
         # representation['owner'] = instance.owner.email
         representation['likes'] = instance.likes.all().count()
         representation['reviews'] = instance.reviews.all().count()
+        if representation["image"] and "http" in representation['image']:
+            representation['image'] = representation["image"][representation["image"].index("https"):].replace("%3A", r":/")
         return representation
 
 
@@ -26,12 +28,15 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
+
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['category'] = instance.category
         # representation['owner'] = instance.owner.email
         representation['likes'] = instance.likes.filter(is_like=True).count()
         representation['reviews'] = ReviewSerializer(instance.reviews.all(), many=True).data
+        if representation["image"] and "http" in representation['image']:
+            representation['image'] = representation["image"][representation["image"].index("http"):].replace("%3A", r":/")
         return representation
 
 

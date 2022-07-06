@@ -1,3 +1,5 @@
+import csv
+import os
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status, viewsets
 from rest_framework.generics import ListAPIView
@@ -7,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, filters
 from django.db.models import Q
+from rest_framework.decorators import api_view
 
 from .models import Product, LikeProduct, Review, FavProduct, ProductImage
 from .permissions import IsAuthorOrAdminPermission
@@ -14,6 +17,8 @@ from .serializers import (ProductSerializer, LikeProductSerializer,
                           ReviewSerializer, ProductDetailSerializer,
                           FavouriteSerializer, ProductImageSerializer)
 from .paginations import ProductPagination
+
+from apps.parsing import parsing_accesories
 
 
 class ListProductView(generics.ListAPIView):
@@ -38,6 +43,16 @@ class CreateProductView(generics.CreateAPIView):
     #     return super().get_serializer_context()
 
 
+# class Parsing(APIView):
+#     def get(self, request):
+#         parsing = main()
+#         try:
+#             Product.objects.create(**parsing)
+#         except:
+#             print("erro")
+#         return Response(status=status.HTTP_200_OK)
+
+
 class GetProductView(APIView):
 
     def get(self, request, pk):
@@ -59,15 +74,14 @@ class UpdateProductView(generics.UpdateAPIView):
 
 
 class LikeProductView(APIView):
-
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, pk):
         user = request.user
         product = get_object_or_404(Product, pk=pk)
         like, create = LikeProduct.objects.get_or_create(user=user, product=product)
-        if like.is_like:  #если тру
-            like.is_like = False  #становится фолс
+        if like.is_like:  # если тру
+            like.is_like = False  # становится фолс
             like.save()
         else:  # если фолс
             like.is_like = True
@@ -124,3 +138,14 @@ class FavouriteProductView(APIView):
 
         # serializer = FavouriteSerializer(fav)
         # return Response(serializer.data)
+
+@api_view(["GET"])
+def parse_and_write_to_db(request):
+    parsing_accesories.main()
+    with open("./apps/parsing/nyxcosmetic.csv") as f:
+        dialect = csv.Dialect
+        dialect.delimiter = "|"
+        dialect.lineterminator = "\n"
+        reader = csv.reader(f, dialect=dialect, quoting=csv.QUOTE_NONE)
+        Product.objects.bulk_create([Product(title=obj[1], desc=obj[2], category=obj[3], price=obj[4], image=obj[5], create_date=obj[6], update_date=obj[7], is_published=obj[8] == 't') for obj in reader])
+    return Response("Succesfully parsed and update_date db", status=status.HTTP_201_CREATED)
