@@ -73,9 +73,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
 )
 
-CORS_ALLOWED_OIGINS = [
+CORS_ALLOWED_ORIGINS = [
     'https://localhost:3000',
-    # 'http://127.0.0.1:3000/',
 ]
 
 CORS_ORIGIN_REGEX_WHITELIST = [

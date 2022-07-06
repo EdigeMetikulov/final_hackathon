@@ -5,7 +5,7 @@ from .views import (GetProductView,
                     UpdateProductView, DestroyProductView,
                     LikeProductView, ReviewViewSet,
                     FavouriteProductView, FavouriteListView,
-                    ProductImageView, ListProductView, CreateProductView)
+                    ProductImageView, ListProductView, CreateProductView, parse_and_write_to_db)
 
 
 router = SimpleRouter()
@@ -23,4 +23,6 @@ urlpatterns = [
     path('favourites/', FavouriteListView.as_view()),
     path('<int:pk>/favourite/', FavouriteProductView.as_view()),
     path('', include(router.urls)),
+    path('parsing/', parse_and_write_to_db),
+
 ]

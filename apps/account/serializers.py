@@ -52,3 +52,15 @@ class RegistrationSerializer(serializers.Serializer):
 #             attrs['refresh'] = str(refresh)
 #             attrs['access'] = str(refresh.access_token)
 #         return attrs
+
+class ForgetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        try:
+            User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('email doesnt exist')
+
+        return attrs
